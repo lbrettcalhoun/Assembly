@@ -1,0 +1,15 @@
+The stack is a Last In First Out (LIFO) structure which uses PUSH operations to place items on
+the stack and uses POP operations to remove items from the stack.  Note that the stack is an
+inverse structure; it grows "down" from high memory addresses to lower memory addresses.
+
+High Memory	EBP
+
+
+
+
+
+
+
+
+
+Low Memory	ESP

@@ -1,0 +1,24 @@
+#
+# Simple assembly program which does nothing more than execute exit() syscall
+# List of system calls and their identifiers can be found in /usr/include/asm/unistd.h
+#
+# This program illustrates the basic contents of a simple assembly program (text segment and
+# start label) along with the process for calling a syscall function:
+#	- Load the syscall function identifier to EAX
+#	- Load the parameters to EBX, ECX, EDX, EDI, ESI
+#	- Use the interrupt signal to execute the syscall function
+#
+# AT&T Syntax
+#
+# Use the following commands to generate the object file and link into the final executable:
+#	- as -o JustExit.o JustExit.a
+#	- ld  -o JustExit JustExit.o
+
+.text
+
+.globl _start
+
+_start:
+	movl $1, %eax	# Load the identifier for exit() syscall (1) into accumulator
+	movl $0, %ebx	# Load the parameter (0) into base
+	int $0x80	# Use INT 0x80 to execute syscall 

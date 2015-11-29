@@ -1,0 +1,9 @@
+The dec instruction:  Decrement (subtract) 1 byte from an address in a register
+Normally used to move ESI backwards after it has been incremented during a
+string operation (DF not set causes ESI to increment during string operations).
+	- dec %esi:  Move ESI backwards 1 byte
+
+The sub instruction:  Subtract X bytes from an address in a register
+Another way to move ESI backwards.
+	- subl $2, %esi:  Move ESI backwards 2 bytes
+

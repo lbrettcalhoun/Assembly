@@ -1,0 +1,42 @@
+#
+# The ubuquitious "Hello World" program in assembly.  Uses the write() system call.
+# List of system calls and their identifiers can be found in /usr/include/asm/unistd.h
+#
+# The write() syscall uses the following parameters:
+#	- fd (file descriptor ... where you want to write the buffer)
+#	- buffer (pointer to a buffer containing the stuff to write)
+#	- count (number of bytes to write from the buffer)
+#
+# This program expands upon the simple JustExit.a by showing how to store initialized data
+# in the data segment and how to work with that data.  It also shows how to use the file 
+# descriptors required by the write() system call.  File descriptors are:
+#	- 0 stdin
+#	- 1 stdout
+#	- 2 stderr
+#
+# AT&T Syntax
+#
+# Use the following commands to generate the object file and link into the final executable:
+#	- as -o HelloWorld.o HelloWorld.a
+#	- ld  -o HelloWorld HelloWorld.o
+
+.data
+
+HelloWorldString:
+	.ascii "Hello World\n"
+
+.text
+
+.globl _start
+
+_start:
+	movl $4, %eax			# Load the identifier for write) syscall (4) into accumulator
+	movl $1, %ebx			# Load the file descriptor parameter (1) into base ... standard output
+	movl $HelloWorldString, %ecx	# Load the pointer to the buffer into counter
+	movl $12, %edx			# Load the count parameter (12) into data
+	int $0x80			# Use INT 0x80 to execute syscall 
+
+	# Don't forget to exit!
+	movl $1, %eax	# Load the identifier for exit() syscall (1) into accumulator
+	movl $0, %ebx	# Load the parameter (0) into base
+	int $0x80	# Use INT 0x80 to execute syscall 

@@ -1,0 +1,8 @@
+The lods instruction:  Loads a string into the EAX register
+	- lodsb:  Load a byte into the AL register
+	- lodsw:  Load a word (2 bytes) into the AX register
+	- lodsl:  Load a double word (4 bytes) into the EAX register
+
+ESI:  Contains address of source string
+DF:   Direction flag controls whether ESI is automatically incremented or decremented
+

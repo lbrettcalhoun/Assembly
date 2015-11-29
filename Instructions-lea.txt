@@ -1,0 +1,8 @@
+The lea instruction:  Load the address of a variable into a register
+	- leab:  Load a single byte of the address into an 8 bit register
+	- leaw:  Load a word (2 bytes) of the address into a 16 bit register
+	- leal:  Load a double word (4 bytes) of the address into a 32 bit register
+
+Note that this does the same thing as the mov instruction ... you can use mov to load the address of a variable
+into a register:  movl $HelloWorldString %esi.
+

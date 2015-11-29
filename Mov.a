@@ -1,0 +1,113 @@
+#
+# Used to demonstrate the use of the mov instruction in assembly.
+#
+# Use the following commands to generate the object file and link into the final executable:
+#	- as -gstabs -o Mov.o Mov.a
+#	- ld  -o Mov Mov.o
+#
+
+.data
+
+HelloWorld:
+	.ascii "Hello World\n"
+
+ByteLocation:
+	.byte 10
+
+Int32:
+	.int 4
+
+Int16:
+	.short 2
+
+Float:
+	.float 10.23
+
+IntegerArray:
+	.int 10,20,30,40,50
+
+.bss
+	.comm ALargeBuffer 10000
+	
+.text
+
+.globl _start
+
+_start:
+	nop  # Put a breakpoint here when you run in gdb
+
+	# First the easy ones ... Note that each statement builds upon the previous statement
+
+	# 1:  Move a 32 bit value into a 32 bit register ... (movl)
+	# Use info registers to check the value of eax before you step over this statement
+	movl $10, %eax
+	# Now check the value again
+
+	# 2:  Move a 16 bit value into a 16 bit memory location (variable) ... (movw)
+	# Use x/1dh thememoryaddressofInt16 to check the value of Int16 before you step over this statement
+	movw $50, Int16
+	# Now check the value again
+
+	# 3:  Move a 32 bit value (10) from 1 register into another ... (movl)
+	# Use info registers to check the value of both registers before you step over this statement
+	movl %eax, %ebx
+	# Now check the value again ... both eax and ebx will now hold 10
+
+	# 4:  Move a 32 bit value from a 32 bit memory location (variable) into a 32 bit register ... (movl)
+	# Use x/1dw thememoryaddressofInt32 to check the value of Int32 before you step over this statement
+	# Use info registers to check the value of eax before you step over this statement
+	movl Int32, %eax
+	# You know what to do ... eax will hold value 4 (from Int32)
+
+	# 5:  Move an 8 bit value into an 8 bit register ... (movb)
+	# Then move the value from the register into an 8 bit memory location (variable) ... (movb)
+	# Yes, you could move the value directly into the memory location (see #2)
+	# Note the use of 8 bit register to hold an 8 bit value ... don't waste registers
+	# Use info registers to check the value of al before you step over this statement
+	# Use x/1db thememoryaddressofByteLocation to check the value of ByteLocation before you step
+	movb $3, %al
+	movb %al, ByteLocation
+	# Yep ... check the value in ByteLocation ... it's going to be 3
+
+	# Now a tricky one
+
+	# 6:  Move a 32 bit value into a 32 bit indexed memory location ... (movl)
+	# Specifically, replace the 3rd element (30) with the immediate value 22 in the arrary
+	# Use BaseAddress(Offset, Index, Size) ... gotta specify Offset and Index using registers 
+	# You can use a plain old integer for the Size (4 means a 32 bit value)
+	# Use x/5dw thememoryaddressofIntegerArray to check the value of 3rd element before you step
+	# Use info registers to check the values of registers before you step
+	movl $0, %eax #  Move the value 0 into eax (this is the Offset)
+	movl $2, %edi #  Move the value of 2 into edi (this is the Index ... 0 based)
+	movl $22, IntegerArray(%eax, %edi, 4) #  Move the value 22 into the 3rd element
+	# If all works correct ... 3rd element (30) is now 22
+
+	# Now the hardest one in this tutorial ... note that each statement builds on the previous statement
+
+	# 7:  Move memory addresses (and values referenced by the memory addresses) using registers
+	# This is analagous to using pointers in C
+	#
+	# Move the address (not the value) of 32 bit memory location (variable) Int32 into 32 bit register
+	# Use info var Int32 to check the address of Int32
+	# Use info reg eax to check the value of eax
+	movl $Int32, %eax
+	#
+	# Move the value referenced in eax to ebx.  Register eax holds a memory location (see above) ... not an 
+	# immediate value.  So you need to ?dereference? the register with (%eax) to get the value.
+	# When you check, the value of 4 (which was stored in Int32 and is now stored in the address
+	# referenced by (%eax) will be moved into ebx.
+	# Use info reg eax ebx to check the values of eac and ebx
+	movl (%eax), %ebx
+	#
+	# This last piece is the toughest.  Address of Int32 has been moved into eax (see above)
+	# So the value (9) you are going to place in (%eax) is actually going into Int32
+	# Use info var Int32 and info reg eax to verify 
+	# Then use x/1dw thememoryaddressofInt32 to check value of Int32
+	# Don't forget to check the value of In32 after you step
+	# Move immediate value 9 into the address held in eax which is actuall the address of Int32
+	movl $9, (%eax)
+
+	# Now exit
+	movl $1, %eax	# Load the identifier for exit() syscall (1) into accumulator
+	movl $0, %ebx	# Load the parameter (0) into base
+	int $0x80	# Use INT 0x80 to execute syscall 

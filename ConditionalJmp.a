@@ -1,0 +1,97 @@
+
+#
+# Used to demonstrate various conditional jmp statements.  Copied from Security Tube StringBasics.s
+#
+# Use the following command to generate the object file and link into the final executable
+#  - as -ggstabs -o StringBasics.o StringBasics.a
+#  - ld -o StringBasics StringBasics.o
+#
+# Notes:
+#
+
+.data 
+  HelloWorldString:
+    .ascii "Hello World of Assembly!\n"
+  BigString:
+    .ascii "Big\n"
+  MediumString:
+    .ascii "Medium\n"
+  SmallString: 
+    .ascii "Small\n"
+  BigInt:
+    .int 50
+  MediumInt:
+    .int 25
+  SmallInt:
+    .int 10
+
+.text
+
+  .globl _start
+
+    _start:
+      nop 
+      	
+      # Experiment with the various JCC instructions.  Use the variables Big, Medium, and Small. 		
+      # 1st time through ... no JCC ... watch the program run straight through and then Exit 0.      
+
+      # 2nd time through ... investigate JNE ... compare BigString to SmallString and 
+      # jump to label Small if the strings are NOT equal.  OK, we know the strings are NOT equal, 
+      # so just cheat by comparing the 1st byte of each string. The comparison will fail and JNE 
+      # will cause execution to jump to Small.
+      # lea SmallString, %esi
+      # lea BigString, %edi
+      # cmpsb
+      # jne Small
+
+      # 3rd time through ... investigate JZ ... XOR the value of MediumInt ... anytime you XOR
+      # a number with itself you get 0.  So the ZF will be set and you can jump to Medium.
+      # movl MediumInt, %ebx
+      # xor %ebx, %ebx
+      # jz Medium
+
+      # 4th time through ... investigate JGE ... CMP the values of BigInt and MediumInt ... 
+      # the value of BigInt is greater than MediumInt so you will jump to Big. A note on the CMP 
+      # instruction:  it subtracts the 1st operand from the 2nd operand and sets the flags 
+      # appropriately:  no flags are set if the result is positive (2nd operand is bigger than
+      # 1st operand), ZF if the operands are equal, SF if the result is negative (2nd operand is smaller
+      # than 1st operand).
+      # movl BigInt, %eax
+      # cmp MediumInt, %eax
+      # jge Big
+
+      # Use write() to send HelloWorldString to stdout
+      mov $4, %eax
+      mov $1, %ebx
+      mov $HelloWorldString, %ecx
+      mov $26, %edx
+      int $0x80
+
+      # Big:  Use write() to send BigString to stdout
+      Big:
+        mov $4, %eax
+        mov $1, %ebx
+        mov $BigString, %ecx
+        mov $4, %edx
+        int $0x80
+        
+      # Medium:  Use write() to send MediumString to stdout
+      Medium:
+        mov $4, %eax
+        mov $1, %ebx
+        mov $MediumString, %ecx
+        mov $7, %edx
+        int $0x80
+
+      # Small:  Use write() to send SmallString to stdout
+      Small:
+        mov $4, %eax
+        mov $1, %ebx
+        mov $SmallString, %ecx
+        mov $7, %edx
+        int $0x80
+
+      # Exit with return code 0
+      movl $1, %eax
+      movl $0, %ebx
+      int $0x80

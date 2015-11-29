@@ -1,0 +1,69 @@
+
+#
+# Used to demonstrate unconditional jmp and call statement.  Copied from Security Tube StringBasics.s
+#
+# Use the following command to generate the object file and link into the final executable
+#  - as -ggstabs -o StringBasics.o StringBasics.a
+#  - ld -o StringBasics StringBasics.o
+#
+# Notes:
+#
+
+#
+# Setup the string sources using the .data section (the place for initialized data)
+#
+.data 
+	HelloWorldString:
+		.ascii "Hello World of Assembly!\n"
+	CallMeString:
+		.ascii "Call Me Maybe!\n"
+
+.text
+
+	.globl _start
+
+	_start:
+		nop 
+
+		# 1. Uncomment the following code to show how to jmp. Assemble, link, and run with
+		# gdb to step through the code.  Use disass and info reg to track the EIP as you step
+ 		# through the code.  As an alternative, use print $eip to track EIP.
+		# First, run the code with the comment intact.  You will see that the code
+		# uses the write() syscall to write the HelloWorldString to stdout.
+		# Then uncomment the jmp instruction and you'll see how the jmp works.  
+
+		#jmp ExitProgram
+
+		# 2.  Uncomment the following code to show how to use the call instruction.  Note that you
+		# must have a ret instruction as the last instruction in your label.  Watch the EIP and ESP
+ 		# when you run the debugger.  Remember that the call instruction pushes the EIP onto the stack
+		# before it jumps to the label.
+
+		call CallMe
+
+		# Use write() to send HelloWorldString to stdout
+		mov $4, %eax
+		mov $1, %ebx
+		mov $HelloWorldString, %ecx
+		mov $26, %edx
+		int $0x80
+
+		# Exit with return code 10
+
+		movl $1, %eax
+		movl $10, %ebx
+		int $0x80
+
+	ExitProgram:
+		# Exit with return code 0
+		movl $1, %eax
+		movl $0, %ebx
+	   	int $0x80	
+
+	CallMe:
+		mov $4, %eax
+		mov $1, %ebx
+		mov $CallMeString, %ecx
+		mov $15, %edx
+		int $0x80
+		ret

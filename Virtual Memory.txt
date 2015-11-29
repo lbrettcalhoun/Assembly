@@ -1,0 +1,17 @@
+Virtual memory used to abstract the memory location for each process.  Each process "thinks"
+it is the only process on the machine at that time.
+
+BFFFFFFF	Stack:	Function arguments and local variables
+		Unused
+		Heap:	Dynamic memory (malloc)
+		.bss:	Uninitialized data
+		.data:  Initialized data
+08048000	.text:  Program code
+
+Use /proc/PID/maps to view virtual memory map of any process.  
+
+To determine if a kernel has ASLR enabled, run a process twice and check the virtual memory
+map to ensure the stack is located at the same virtual memory location.  All Linux kernels 2.6
+and above use ASLR by default.
+
+Disable ASLR:  echo 0 > /proc/sys/kernel/randomize_va_space

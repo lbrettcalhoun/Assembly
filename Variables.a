@@ -1,0 +1,53 @@
+#
+# Used to demonstrate proper declaration of variables in assembly.
+# Both initialized data variables (.data) and uninitialized variables (.bss).
+# Also used with gdb to demonstrate examining various memory locations.
+#
+# Use the following commands to generate the object file and link into the final executable:
+#	- as -gstabs -o Variables.o Variables.a
+#	- ld  -o Variables Variables.o
+#
+# Use the following gdb commands to examine the memory locations for each variable:
+#	- break :  Set a breakpoint to stop execution before the program exits
+#	- info variables:  Show the memory location of each variable
+#	- x/1sb thememorylocationforHelloWorld:  Show 1 string value in HelloWorld variable
+#	- x/12cb thememorylocationforHelloWorld:  Show 12 char values in HelloWorld variable
+#	- x/1db thememorylocationforByteLocation:  Show 1 decimal value in ByteLocation variable
+#	- x/1dw thememorylocationforInt32:  Show 1 decimal value in Int32 variable
+#	- x/1dh thememorylocationforInt16:  Show 1 decimal value in Int16 variable
+#	- x/1fw thememorylocationforFloat:  Show 1 float value in Float variable
+#	- x/5dw thememorylocationforIntegerArray:  Show the 5 decimal values in IntegerArray
+#	- x/10dw thememorylocationforUninitialized:  Show the decimal value of 1st 10 locations in ALargeBuffer
+
+.data
+
+HelloWorld:
+	.ascii "Hello World\n"
+
+ByteLocation:
+	.byte 10
+
+Int32:
+	.int 4
+
+Int16:
+	.short 2
+
+Float:
+	.float 10.23
+
+IntegerArray:
+	.int 10,20,30,40,50
+
+.bss
+	.comm ALargeBuffer 10000
+	
+.text
+
+.globl _start
+
+_start:
+	# Just exit.  Put a breakpoint at next line when in gdb.
+	movl $1, %eax	# Load the identifier for exit() syscall (1) into accumulator
+	movl $0, %ebx	# Load the parameter (0) into base
+	int $0x80	# Use INT 0x80 to execute syscall 

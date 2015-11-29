@@ -1,0 +1,7 @@
+The DF flag (Decrement Flag):  Controls the increment/decrement of ESI and EDI when performing movs operations.  
+If DF is set (1) then ESI and EDI are decremented.  If DF is not set (0) then ESI and EDI are incremented.  In order
+to use the REP instruction, DF must be not set (0) which is the default value.
+
+ESI:  Contains address of source string
+EDI:  Contains address of destination
+

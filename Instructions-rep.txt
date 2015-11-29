@@ -1,0 +1,9 @@
+The rep instruction:  Works with the movs instruction to copy an entire string ... instead of just a byte, word,
+or double word.  REP repeats a string movs instruction until ECX = 0
+	- load the ECX register with the string length
+	- REP MOVSx
+
+ESI:  Contains address of source string
+EDI:  Contains address of destination
+ECX:  Contains length of string and is automatically decremented as the string is copied
+

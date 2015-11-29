@@ -1,0 +1,24 @@
+General Purpose Registers:
+EAX:  Accumulator, used for storing operation results
+  AX:  First 16 bits of EAX
+EBX:  Base, used as input/output register
+  BX:  First 16 bits of EBX
+ECX:  Counter, used in loop and string operations
+  CX:  First 16 bits of ECX
+EDX:  Data, used as input/output register
+  DX:  First 16 bits of EDX
+ESI:  Source, used for string (copy) operations
+EDI:  Target, used for string (copy) operations
+ESP:  Stack pointer, top (bottom) of stack
+EBP:  Base pointer, bottom (top) of stack
+
+Segment Registers:
+CS:
+DS:
+SS:
+ES:
+FS:
+GS
+
+Instruction Pointer:
+EIP:

@@ -1,0 +1,154 @@
+
+#
+# Monkey around with the stack
+#
+# Use the following command to generate the object file and link into the final executable
+#  - as -ggstabs -o StringBasics.o StringBasics.a
+#  - ld -o StringBasics StringBasics.o
+#
+# Notes:
+#  This program is the result of me messing around with the stack and call instruction.
+#  You can't use write() to send an integer to the console ... but I found a way to convert an int to ASCII char value.
+#  See http://stackoverflow.com/questions/15419201/system-write-integer and below comments for more details.
+#  Because of the problem using integers with write() this program only works with single digit integers, 1+1, 2+2, 2+4, etc.
+
+.data 
+  LookupTable:
+   .ascii "0123456789" # This is the lookup table for converting a single integer to it's printable ASCII character
+  output: 
+    .ascii "0"
+
+.text
+
+  .globl _start
+
+    _start:
+      nop 
+      xor %eax, %eax # Just do something (anything) to keep breakpoint from running past stack
+	
+      # 1st time ... do everything manually.  Don't use push or pop to put/remove arguments.
+      # Build the frame  ... after these instructions are executed the stack pointer and 
+      # base pointer will be the same.  This is the function prologue.
+      # mov %ebp, %edi      # Put the original base pointer in EDI for safe keeping.
+      # mov %esp, %ebp      # Set the new base pointer (its equal to the stack pointer)
+
+      # Grow the stack frame to make room for 2 integer arguments
+      # sub $8, %esp
+
+      # Load args on the stack in reverse order
+      # movl $2, 8(%esp)
+      # movl $1, 4(%esp)
+
+      # Call function f with the args on the stack.  Interesting to note:  The call instruciton
+      # decrements the stack point by 4. Why ... it pushes the return address on the stack. 
+      # call f
+      
+      # Tear down the frame by returning the ESP and EBP to their original values
+      # add $8, %esp
+      # mov %edi, %ebp
+	
+      # 2nd time ... Use push/pop to manipulate the stack frame. This example uses ESP
+      # to reference arguments inside the called function. It's not the "right" way to
+      # do it according to the documentation.  But it works.  And it's my way!
+      # Build the frame  ... after these instructions are executed the stack pointer and 
+      # base pointer will be the same.  This is the function prologue.
+      # push %ebp           # Put the original base pointer on the stack for safe keeping.
+      # mov %esp, %ebp      # Set the new base pointer (its equal to the stack pointer)
+
+      # Load args on the stack in reverse order.  There is no need to "grow" the frame; push
+      # automagically decrements the stack pointer as necessary.
+      # push $3
+      # push $2
+
+      # Call function f with the args on the stack.  Interesting to note:  The call instruciton
+      # decrements the stack point by 4.  This is because the call instruction puts the return
+      # address on the stack! 
+      # call f
+      
+      # Unlike the 1st time through, there is no need to tear down the frame.  The return instruction
+      # in our function takes care of returning the stack pointer to its original location.  But you 
+      # still need to pop the EBP to reset its original location.
+      # pop %ebp 
+
+      # 3rd time ... Use push/pop to manipulate the stack frame. This example uses EBP
+      # to reference arguments inside the called function. It's the "right" way to
+      # do it according to the documentation. 
+      # Build the frame  ... after these instructions are executed the stack pointer and 
+      # base pointer will be the same.  This is the function prologue.
+      push %ebp           # Put the original base pointer on the stack for safe keeping.
+      mov %esp, %ebp      # Set the new base pointer (its equal to the stack pointer)
+
+      # Load args on the stack in reverse order.  There is no need to "grow" the frame; push
+      # automagically decrements the stack pointer as necessary.
+      push $6
+      push $1
+
+      # Call function f with the args on the stack.  Interesting to note:  The call instruciton
+      # decrements the stack point by 4.  This is because the call instruction puts the return
+      # address on the stack! 
+      call f
+      
+      # Unlike the 1st time through, there is no need to tear down the frame.  The return instruction
+      # in our function takes care of returning the stack pointer to its original location.  But you 
+      # still need to pop the EBP to reset its original location.
+      pop %ebp 
+
+      # Print the result of the function call using the write system call. Normally, you would just load the
+      # system call paramaters into the registers, but that won't work this time because the result is an integer
+      # not a string.  So you have to convert the int to a string.  I found the following code on stackoverflow 
+      # and adapted it to fit the Linux AT&T syntax.
+      mov $LookupTable, %ebx # Put address of LookupTable into EBX 
+      add %eax, %ebx         # Add the result of f to address in EBX ... this is the ASCII character of the integer!
+      mov (%ebx), %cl        # Put the ASCII value in the lower part of ECX (1 byte)
+      mov %cl, output        # And finally put the ASCII value in the output variable
+ 
+      # Now print the result using the write system call.
+      mov $4, %eax
+      mov $1, %ebx
+      mov $output, %ecx
+      mov $1, %edx
+      int $0x80
+
+      # Return to the command prompt with value 0
+
+      mov $1, %eax
+      mov $0, %ebx
+      int $0x80
+
+      # 1st time through ... remember we are doing the function without any push/pop instructions.
+      # Function f:  Add args and return the result via EAX. When you are in the function, the args
+      # will be located at the following places: 
+      #  1st arg (1):  ESP + 4 + 4 (The 2nd 4 is necessary because ESP decremented by call instruction)
+      #  2nd arg (2):  ESP + 8 + 4 (The 2nd 4 is necessary because ESP decremented by call instruction)
+      # f:
+      #   mov 4+4(%esp), %eax # Move the value in ESP + 4 (1st arg) into EAX
+      #   mov 8+4(%esp), %ebx # 2nd arg into EBX 
+      #   add %eax, %ebx      # Add and store into EBX
+      #   mov %ebx, %eax      # Move the result into EAX ... EAX always holds return value for a function
+      #   ret                 # The ret instruction returns control to caller and passes return value via EAX
+
+      # 2nd time through ... use the return instruction to reset the stack to its original setting.
+      # You're not really supposed to use ESP to get to your arguments.  See 3rd time for more info.
+      # Function f:  Add args and return the result via EAX. When you are in the function, the args
+      # will be located at the following places: 
+      #  1st arg (2):  Located at ESP+8
+      #  2nd arg (3):  Located at ESP+4
+      # f:
+      #   mov 4(%esp), %eax  # Move the 1st arg (2) into EAX
+      #   mov 8(%esp), %ebx  # Move the 2nd arg (3) into EBX
+      #   add %eax, %ebx     # Add and store into EBX
+      #   mov %ebx, %eax     # Move the result into EAX ... EAX always holds return value for a function
+      #   ret $8             # Return the result to caller in EAX and reset the stack frame by incrementing by 8
+
+      # 3rd time through ... use the return instruction to reset the stack to its original setting.
+      # This is the way you're supposed to reference your arguments inside a function ... with EBP.
+      # Function f:  Add args and return the result via EAX. When you are in the function, the args
+      # will be located at the following places: 
+      #  1st arg (2):  Located at ESP+8
+      #  2nd arg (3):  Located at ESP+4
+      # f:
+      #   mov 4(%esp), %eax  # Move the 1st arg (2) into EAX
+      #   mov 8(%esp), %ebx  # Move the 2nd arg (3) into EBX
+      #   add %eax, %ebx     # Add and store into EBX
+      #   mov %ebx, %eax     # Move the result into EAX ... EAX always holds return value for a function
+      #   ret $8             # Return the result to caller in EAX and reset the stack frame by incrementing by 8

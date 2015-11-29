@@ -1,0 +1,36 @@
+Assembly Structure:
+
+.data:			Put initialized strings here using following format
+
+NameofString:
+	.ascii "StringValue\n"
+
+.text:			Put code here
+
+.globl _start:		Put external routines (syscalls) here ... see below section
+
+_start:			The "main" function ... start execution here
+
+System Calls:
+Linux system calls are exposed with libraries.  The list of system calls is available in
+/usr/include/asm/unistd.h.  System calls are invoked using an interrupt:  INT 0x80.
+
+Arguments are passed to system calls using the general purpose registers.
+EAX:	System call number (from unistd.h)
+EBX:	1st arg
+ECX:	2nd arg
+EDX:	3rd arg
+ESI:	4th arg
+EDI:	5th arg
+
+Example of calling exit(0) ... system call number 1:
+movl $1, %eax:	Load value 1 into EAX
+movl $0, %ebx:	Load value 0 into EBX
+int $0x80:	Raise the interrupt
+
+Compile assembly code to object code:
+as -o Output.o Input.a
+
+Link object file into executable:
+ld -o Executable Output.o
+

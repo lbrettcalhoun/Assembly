@@ -1,0 +1,36 @@
+The jmp instruction:  Unconditional jump to a different part of code.  Essentially a GOTO.
+It jumps to a label.  There are 3 types of jumps:
+  - short
+  - near
+  -far
+You need to setup a function in the text section so you will have a label.
+
+  instruction
+  instruction
+  instruction
+  
+  jmp nameoflabel     <-------- jump to nameoflabel ... skip the below instructions
+
+  more instruction
+  more instruction
+  more instruction
+
+  nameoflabel:         <-------- execution jumps to here
+    instruction
+    instruction
+    instruction
+
+The jnz, jz, ja, je, etc instructions.  Conditional jump to a different part of the code.  These jumps
+rely on the settings of flags in the eflags register.  Flags in this register are set based on the
+result of various instructions.  Here are some examples:
+  jz location:  Jump to location if zero flag is set (ZF)
+  jnz location:  Jump to location if zero flag is not set
+  jc location:  Jump to location if carry flag is set (CF)
+  jnc location:  Jump to location if carry flag is not set
+  je location:  Jump if equal to
+  jne location:  Jump if not equal to
+  ja location:  Jump if above
+  jb location:  Jump if below
+  jg location:  Jump if greater
+  jge location:  Jump if greater than or equal to
+

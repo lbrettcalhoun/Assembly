@@ -1,0 +1,8 @@
+The movs instruction:  Copies a string from source to destination
+	- movsb:  Copy a byte (8 bits) ... single character
+	- movsw:  Copy a word (16 bits) ... 2 characters
+	- movsl:  Copy a double word (32 bits) ... 4 characters
+
+ESI:  Contains address of source string
+EDI:  Contains address of destination
+

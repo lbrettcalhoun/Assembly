@@ -1,0 +1,19 @@
+Compliation:  Use gcc with the "-g gdb" option to compile with additional GDB information.
+
+list <line>:  				List source code
+run <parameters>:  			Run the executable
+disassemble <function>:  		Disassemble function
+break <line>:  				Set a breakpoint
+print <var>:  				Print a variable value ... must be in same context (scope) as variable
+print /x &<var>:			Print the memory address of a variable ... note the &
+print /x $<register>:			Print the memory address held in a register
+print /c $<register>:			Print the value of a register in character format (good for strings only)
+print $<register>:			Print the value of a register
+info variables:				List all variables
+info <registers|register>:  		Display registers, memory addresses and values
+x/repeat unit size <address>:  		Display the values held in memory address using a specific format:
+	repeat:  	Decimal integer indicating the number of units to display
+	unit:		Hex (x), octal (o), decimal (d), character (c), string (s)
+	size:		Byte (b), word (w)
+s:					Step 1 instruction
+continue:				Run to end of program

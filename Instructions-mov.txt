@@ -1,0 +1,49 @@
+The mov instruction:  Move a value into a register
+	- movl source, destination:  Move a 32 bit value into a register
+		movl %eax, %ebx
+	- movw source, destiination:  Move a 16 bit value into a register
+		movw %ax, %bx
+	- movb source, destination:  Move an 8 bit value into a register
+		movb %ah, %bh
+Note the use of different value registers (eax, ax, ah).
+
+Moving data between registers and variables:  Notice the use of correct size register with the appropriate
+instruction
+
+location:
+	.int 10
+
+movl location, %ebx
+
+Moving a value into a register:  Move value 10 into the register ebx
+
+movl $10, %ebx
+
+Moving a value into variable:  Move value 10 into the variable location
+
+location:
+	.byte 0
+
+movb $10, location
+
+Moving data into an indexed memory location:  Move the value of eax into the location formerly occupied by 30
+
+IntegerArray:
+	.int 10,20,30,40,50
+
+Move into the 3rd integer "30":
+	BaseAddress(Offset, Index, Size):  Where:
+		BaseAddress = name of the array
+		Offset = 0
+		Index = Position of array element
+		Size = Size of the array element (4 for integer)
+
+movl %eax, IntegerArray(0, 2, 4)
+
+Move a memory address:  This is analagous to using pointers (reference to memory address) in C.  Move the address
+(not the value) into a register.
+
+movl $location, %edi:  Move the address (not the value) of location into edi
+movl $9, (%edi):  Move the value 9 into the memory address referenced by edi ... not into edi
+movl $9, 4(%edi):  Move the value 9 into the memory address that is 4 bytes greater than the memory address of edi
+movl $9, 2-(%edi):  Move the value 9 into the memory address that is 2 bytes less than the memory address of edi

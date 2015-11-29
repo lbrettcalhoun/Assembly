@@ -1,0 +1,16 @@
+call:  The call instruction.  This is basically same as calling a function in C.
+When a call instruction is executed, it does 2 things:
+  - it pushes the EIP onto the stack
+  - it jumps to the call location
+Each call must conclude with a RET instruction.  The RET instruction will return
+control to the instruction following the call instruction.
+
+call location
+next instruction	<----------------------------
+more instruction				    |
+					    	    |
+location:					    |
+  instruction					    |
+  instruction    				    |
+  instruction					    |
+  ret			--- Returns control to ------

@@ -1,0 +1,12 @@
+The cmps instruction:  Compare 2 strings
+	- cmpsb:  Compare the first byte (8 bits) of 2 strings ... single character
+	- cmpsw:  Compare the first word (16 bits) ... 2 characters
+	- cmpsl:  Compare the first double word (32 bits) ... 4 characters
+
+EDI:  Contains address of first string memory location
+ESI:  Contains address of second string memory location
+
+Result of the comparison is stored in the eflags register: ZF. 
+
+Hmmm ... I forgot ... does the ZF get set if the strings are same or
+different?
